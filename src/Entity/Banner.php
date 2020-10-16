@@ -23,7 +23,7 @@ class Banner
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     private $position;
 
@@ -33,12 +33,12 @@ class Banner
     private $link;
 
     /**
-     * @ORM\Column(type="binary", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $image;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default": true})
      */
     private $active;
 
