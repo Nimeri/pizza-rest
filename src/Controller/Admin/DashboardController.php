@@ -32,12 +32,24 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Sole-pizza');
+            ->setTitle('Sole-pizza')
+            ->setTranslationDomain('sole-pizza.ru');
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linktoDashboard('Dashboard', 'fa fa-home');
-        // yield MenuItem::linkToCrud('The Label', 'icon class', EntityClass::class);
+//        yield MenuItem::linktoRoute('Вернуться на сайт', 'fa fa-home', 'homepage');
+        yield MenuItem::subMenu('Пользователи', 'fa fa-address-card')->setSubItems([
+            MenuItem::linkToCrud('Пользователи', 'fa fa-user', User::class),
+            MenuItem::linkToCrud('Адреса', 'fa fa-map-marked-alt', Address::class),
+        ]);
+        yield MenuItem::subMenu('Каталог', 'fa fa-cookie-bite')->setSubItems([
+            MenuItem::linkToCrud('Категории', 'fa fa-tags', Category::class),
+            MenuItem::linkToCrud('Товары', 'fa fa-pizza-slice', Product::class),
+        ]);
+        yield MenuItem::linkToCrud('Заказы', 'fa fa-shopping-basket', Orders::class);
+        yield MenuItem::linkToCrud('Баннеры', 'fa fa-photo-video', Banner::class);
+        yield MenuItem::linkToCrud('Единицы измерения', 'fa fa-ruler-combined', Measure::class);
+
     }
 }
