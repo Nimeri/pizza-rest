@@ -4,9 +4,16 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ * @Vich\Uploadable
+ * UniqueEntity("code")
  */
 class Product
 {
@@ -48,6 +55,13 @@ class Product
     private $balance;
 
     /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     * @Vich\UploadableField(mapping="products_image", fileNameProperty="image")
+     * @var File|null
+     */
+    private $imageFile;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $image;
@@ -62,6 +76,17 @@ class Product
      * @ORM\JoinColumn(nullable=false)
      */
     private $measure;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    public function __toString(): string
+    {
+        return (string)$this->getName();
+    }
+
 
     public function getId(): ?int
     {
@@ -145,6 +170,25 @@ class Product
         return $this->image;
     }
 
+    /**
+     * @return File|null
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|UploadedFile $imageFile
+     *
+     * @return Category
+     */
+    public function setImageFile(?File $imageFile = null): self
+    {
+        $this->imageFile = $imageFile;
+        return $this;
+    }
+
     public function setImage($image): self
     {
         $this->image = $image;
@@ -173,6 +217,37 @@ class Product
     {
         $this->measure = $measure;
 
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue(): self
+    {
+        $this->setCreatedAt(new \DateTime());
+        return $this;
+    }
+
+    /**
+     * @param SluggerInterface $slugger
+     * @return Product
+     */
+    public function computeSlug(SluggerInterface $slugger): self
+    {
+        $this->code = (string)$slugger->slug((string)$this, '_')->lower();
         return $this;
     }
 }
