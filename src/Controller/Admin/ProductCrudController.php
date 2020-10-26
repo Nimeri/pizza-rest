@@ -86,6 +86,7 @@ class ProductCrudController extends AbstractCrudController
 //        yield MenuItem::section('Каталог');
         yield NumberField::new('price', 'Цена');
         yield IntegerField::new('balance', 'Остаток');
+        yield AssociationField::new('measure', 'Единицы измерения');
         yield ImageField::new('image', 'Изображение')->onlyOnIndex()
             ->setBasePath('/uploads/images/products');
         yield ImageField::new('imageFile', 'Изображение')
