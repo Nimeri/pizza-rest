@@ -6,9 +6,16 @@ use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ * @Vich\Uploadable
+ * UniqueEntity("code")
  */
 class Category
 {
@@ -35,6 +42,14 @@ class Category
     private $active;
 
     /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     * @Vich\UploadableField(mapping="categories_image", fileNameProperty="image")
+     * @var File|null
+     */
+    private $imageFile;
+
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $image;
@@ -59,10 +74,40 @@ class Category
      */
     private $products;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->products = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string)$this->getName();
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue(): self
+    {
+        $this->setCreatedAt(new \DateTime());
+        return $this;
+    }
+
+    /**
+     * @param SluggerInterface $slugger
+     * @return $this
+     */
+    public function computeSlug(SluggerInterface $slugger): self
+    {
+        $this->code = (string)$slugger->slug((string)$this, '_')->lower();
+        return $this;
     }
 
     public function getId(): ?int
@@ -106,12 +151,38 @@ class Category
         return $this;
     }
 
-    public function getImage()
+    /**
+     * @return File|null
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|UploadedFile $imageFile
+     *
+     * @return Category
+     */
+    public function setImageFile(?File $imageFile = null): self
+    {
+        $this->imageFile = $imageFile;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage($image): self
+    /**
+     * @param string|null $image
+     * @return Category
+     */
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 
@@ -200,6 +271,18 @@ class Category
                 $product->setcategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

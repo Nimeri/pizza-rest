@@ -54,6 +54,16 @@ class User
      */
     private $orders;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $role;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
     public function __construct()
     {
         $this->address = new ArrayCollection();
@@ -183,6 +193,30 @@ class User
                 $order->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
