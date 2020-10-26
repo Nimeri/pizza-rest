@@ -4,9 +4,15 @@ namespace App\Entity;
 
 use App\Repository\BannerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass=BannerRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ * @Vich\Uploadable
  */
 class Banner
 {
@@ -31,6 +37,13 @@ class Banner
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $link;
+
+    /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     * @Vich\UploadableField(mapping="banners_image", fileNameProperty="image")
+     * @var File|null
+     */
+    private $imageFile;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -100,6 +113,25 @@ class Banner
         return $this;
     }
 
+    /**
+     * @return File|null
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|UploadedFile $imageFile
+     *
+     * @return Banner
+     */
+    public function setImageFile(?File $imageFile = null): self
+    {
+        $this->imageFile = $imageFile;
+        return $this;
+    }
+
     public function getActive(): ?bool
     {
         return $this->active;
@@ -123,4 +155,14 @@ class Banner
 
         return $this;
     }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue(): self
+    {
+        $this->setCreatedAt(new \DateTime());
+        return $this;
+    }
+
 }

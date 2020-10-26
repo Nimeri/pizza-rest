@@ -10,3 +10,7 @@ vich_uploader:
             uri_prefix: /uploads/images/products/
             upload_destination: '%kernel.project_dir%/public/uploads/images/products/'
             namer: Vich\UploaderBundle\Naming\Base64Namer
+        banners_image:
+            uri_prefix: /uploads/images/banners/
+            upload_destination: '%kernel.project_dir%/public/uploads/images/banners/'
+            namer: Vich\UploaderBundle\Naming\Base64Namer
