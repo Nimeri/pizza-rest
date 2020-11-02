@@ -35,7 +35,7 @@ class Product
     private $code;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default": true})
      */
     private $active;
 

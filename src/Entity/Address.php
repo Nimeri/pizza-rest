@@ -47,6 +47,23 @@ class Address
      */
     private $office;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="address")
+     */
+    private $user;
+
+    public function __toString(): string
+    {
+        $address = '';
+        $address .= $this->region ? $this->region . ' ' : '';
+        $address .= $this->city ? $this->city . ' ' : '';
+        $address .= $this->street ? $this->street . ' ' : '';
+        $address .= $this->build ?? '';
+        $address .= $this->part ? $this->part . ' ' : ' ';
+        $address .= $this->office ?? '';
+        return (string)$address;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +137,18 @@ class Address
     public function setOffice(string $office): self
     {
         $this->office = $office;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
